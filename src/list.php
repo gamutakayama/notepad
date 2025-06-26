@@ -35,7 +35,7 @@ $notes = array_values(array_unique(array_filter(
 
 <body>
   <div class="menu">
-    <span class="title">Notepad</span>
+    <span class="title">Notepad(v2025.6.26)</span>
     <a href="/edit/">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
