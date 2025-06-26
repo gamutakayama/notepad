@@ -1,0 +1,20 @@
+services:
+  notepad:
+    container_name: notepad
+    image: gamutakayama/notepad:latest
+    environment:
+      # UPLOAD_MAX_FILESIZE: 10M
+      # POST_MAX_SIZE: 40M
+      # MAX_EXECUTION_TIME: 150
+      PRIVATE_MODE: ""
+      USER_ID: "063edb31-bb89-4d37-91c3-8bb8726b258d"
+      USERNAME: ""
+      PASSWORD: ""
+      JWT_KEY: "5ed6a97e-f3bc-4a27-ae9a-06128176de25"
+      HOSTED_ON: ""
+      HOSTED_ON_URL: ""
+    restart: unless-stopped
+    ports:
+      - "10000:80"
+    volumes:
+      - ./_notes:/var/www/html/_notes

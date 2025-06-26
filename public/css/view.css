@@ -1,0 +1,27 @@
+#markdown:has(+ #files) {
+  height: calc(80% - 8px);
+}
+
+.gutter {
+  align-items: center;
+  color: var(--borderColor-default);
+  display: flex;
+  justify-content: center;
+}
+
+.gutter.gutter-vertical {
+  cursor: row-resize;
+}
+
+.gutter + #files {
+  margin-top: 0;
+}
+
+#files {
+  background-color: var(--bgColor-default);
+  border: 1px solid var(--borderColor-default);
+  height: calc(20% - 8px);
+  margin-top: 16px;
+  overflow: auto;
+  padding: 16px;
+}

@@ -1,0 +1,83 @@
+<?php
+require_once __DIR__ . "/../config/config.php";
+require_once __DIR__ . "/utils.php";
+
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Expires: 0");
+
+function redirect()
+{
+  $redirect = "/";
+  if (isset($_GET["redirect"])) {
+    $redirect = urldecode($_GET["redirect"]);
+    if (!preg_match("#^/.*$#", $redirect)) {
+      $redirect = "/";
+    }
+  }
+  header("Location: $redirect");
+  die;
+}
+
+$failed = false;
+
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
+  if (checkLogged()) {
+    redirect();
+  }
+} else if ($_SERVER["REQUEST_METHOD"] === "POST") {
+  $username = $_POST["username"] ?? "";
+  $password = $_POST["password"] ?? "";
+
+  if ($username === USERNAME && $password === PASSWORD) {
+    generateToken();
+    redirect();
+  } else {
+    $failed = true;
+  }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" href="/public/images/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/public/images/apple-icon-180.png" />
+  <link rel="manifest" href="/public/manifest.json" />
+  <title>Sign in to Notepad</title>
+  <link rel="stylesheet" href="/public/css/index.css" />
+  <link rel="stylesheet" href="/public/css/login.css" />
+</head>
+
+<body>
+  <img alt="Notepad" class="logo" height="48" loading="lazy" src="/public/images/favicon.svg">
+  <h1>Sign in to Notepad</h1>
+  <?php if ($failed): ?>
+    <div class="error">Incorrect username or password.</div>
+  <?php endif; ?>
+  <form action="" id="form" method="POST">
+    <label for="username">Username</label>
+    <input autocapitalize="off" autocomplete="username" autocorrect="off" autofocus="autofocus" id="username" name="username" required="required" type="text" />
+    <label for="password">Password</label>
+    <input autocomplete="current-password" id="password" name="password" required="required" type="password" />
+    <input type="submit" value="Sign in" />
+  </form>
+  <script>
+    const form = document.getElementById("form");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const submitButton = form.querySelector('input[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.value = "Signing in…";
+
+      form.submit();
+    });
+  </script>
+</body>
+
+</html>

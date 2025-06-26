@@ -1,0 +1,11 @@
+_notes/
+.git/
+.github/
+.vscode/
+**/.DS_Store
+.dockerignore
+.gitignore
+composer.json
+composer.lock
+docker-compose.yml
+Dockerfile
