@@ -154,7 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <link rel="icon" href="/public/images/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/public/images/apple-icon-180.png" />
   <link rel="manifest" href="/public/manifest.json" />
-  <title><?= $_GET["note"]; ?></title>
+  <title><?= $_GET["note"] . " | " . SITE_TITLE; ?></title>
   <link rel="stylesheet" href="/public/css/github-markdown-5.8.1.min.css" />
   <link rel="stylesheet" href="/public/css/index.css" />
   <link rel="stylesheet" href="/public/css/edit.css" />

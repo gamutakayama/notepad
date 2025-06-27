@@ -6,6 +6,7 @@ services:
       # UPLOAD_MAX_FILESIZE: 10M
       # POST_MAX_SIZE: 40M
       # MAX_EXECUTION_TIME: 150
+      SITE_TITLE: "Notepad"
       PRIVATE_MODE: ""
       USER_ID: "063edb31-bb89-4d37-91c3-8bb8726b258d"
       USERNAME: ""

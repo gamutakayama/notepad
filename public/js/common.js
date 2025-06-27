@@ -82,8 +82,8 @@ const initMarkdownIt = () => {
   md.linkify.set({ fuzzyEmail: false });
 
   // https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md#renderer
-  // Remember the old renderer if overridden, or proxy to the default renderer.
-  const defaultRender =
+  // Remember the old renderer if overridden, or proxy to the default link_open renderer.
+  const defaultLinkOpenRender =
     md.renderer.rules.link_open ||
     ((tokens, idx, options, _, self) => {
       return self.renderToken(tokens, idx, options);
@@ -102,7 +102,18 @@ const initMarkdownIt = () => {
     } catch {}
 
     // Pass the token to the default renderer.
-    return defaultRender(tokens, idx, options, env, self);
+    return defaultLinkOpenRender(tokens, idx, options, env, self);
+  };
+
+  const defaultImageRender =
+    md.renderer.rules.image ||
+    ((tokens, idx, options, _, self) => {
+      return self.renderToken(tokens, idx, options);
+    });
+  md.renderer.rules.image = (tokens, idx, options, env, self) => {
+    tokens[idx].attrSet("loading", "lazy");
+
+    return defaultImageRender(tokens, idx, options, env, self);
   };
 
   return md;

@@ -1,4 +1,6 @@
 <?php
+define("SITE_TITLE", getenv("SITE_TITLE") ?: "Notepad");
+
 define("PRIVATE_MODE", getenv("PRIVATE_MODE") ?: "");
 
 define("USER_ID", getenv("USER_ID") ?: "063edb31-bb89-4d37-91c3-8bb8726b258d");

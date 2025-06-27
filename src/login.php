@@ -48,14 +48,14 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
   <link rel="icon" href="/public/images/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/public/images/apple-icon-180.png" />
   <link rel="manifest" href="/public/manifest.json" />
-  <title>Sign in to Notepad</title>
+  <title>Sign in to <?= SITE_TITLE; ?></title>
   <link rel="stylesheet" href="/public/css/index.css" />
   <link rel="stylesheet" href="/public/css/login.css" />
 </head>
 
 <body>
-  <img alt="Notepad" class="logo" height="48" loading="lazy" src="/public/images/favicon.svg">
-  <h1>Sign in to Notepad</h1>
+  <img alt="<?= SITE_TITLE; ?>" class="logo" height="48" loading="lazy" src="/public/images/favicon.svg">
+  <h1>Sign in to <?= SITE_TITLE; ?></h1>
   <?php if ($failed): ?>
     <div class="error">Incorrect username or password.</div>
   <?php endif; ?>

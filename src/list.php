@@ -28,14 +28,14 @@ $notes = array_values(array_unique(array_filter(
   <link rel="icon" href="/public/images/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/public/images/apple-icon-180.png" />
   <link rel="manifest" href="/public/manifest.json" />
-  <title>List</title>
+  <title>List | <?= SITE_TITLE; ?></title>
   <link rel="stylesheet" href="/public/css/github-markdown-5.8.1.min.css" />
   <link rel="stylesheet" href="/public/css/index.css" />
 </head>
 
 <body>
   <div class="menu">
-    <span class="title">Notepad(v2025.6.26)</span>
+    <span class="title" title="<?= SITE_TITLE; ?> - v2025.6.27"><?= SITE_TITLE; ?></span>
     <a href="/edit/">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
