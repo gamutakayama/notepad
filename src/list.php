@@ -10,7 +10,7 @@ $directory = __DIR__ . "/../_notes";
 checkPrivateMode("list");
 checkDirectory($directory);
 
-$filenames = array_diff(scandir($directory), [".", ".."]);
+$filenames = array_diff(scandir($directory), [".", "..", "login_fail.json"]);
 $notes = array_values(array_unique(array_filter(
   array_map(fn($filename) => pathinfo($filename, PATHINFO_FILENAME), $filenames),
   fn($filename) => $filename,
@@ -35,7 +35,7 @@ $notes = array_values(array_unique(array_filter(
 
 <body>
   <div class="menu">
-    <span class="title" title="<?= SITE_TITLE; ?> - v2025.6.27"><?= SITE_TITLE; ?></span>
+    <span class="title" title="<?= SITE_TITLE; ?> - v2025.7.1"><?= SITE_TITLE; ?></span>
     <a href="/edit/">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
