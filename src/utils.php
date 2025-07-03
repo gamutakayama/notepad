@@ -83,7 +83,7 @@ function generateToken()
     "path" => "/",
     "secure" => true,
     "httponly" => true,
-    "samesite" => "Strict",
+    "samesite" => "Lax",
   ]);
 }
 
