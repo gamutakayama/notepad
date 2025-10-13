@@ -1,4 +1,12 @@
-const getCopyRawText = () => textarea.value;
+import { initCodeMirror } from "/public/js/codemirror.js";
+import {
+  getPathnameLastSegment,
+  initMarkdownIt,
+  initSplit,
+} from "/public/js/common.js";
+import { setupCopyRaw } from "/public/js/menu.js";
+
+setupCopyRaw(() => editorView.state.doc.toString());
 
 const deleteElement = document.getElementById("delete");
 if (deleteElement) {
@@ -26,9 +34,30 @@ if (deleteElement) {
   });
 }
 
+const debounce = (callback, wait) => {
+  let timeoutId = null;
+
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => callback(...args), wait);
+  };
+};
+
+const onDocChanged = debounce((update) => {
+  const docString = update.state.doc.toString();
+  if (content === docString) {
+    statusElement.className = "status-success";
+  } else {
+    statusElement.className = "status-attention";
+  }
+  markdownElement.innerHTML = md.render(docString);
+}, 500);
+
+const editorView = initCodeMirror(onDocChanged);
+
 const uploadContent = async () => {
-  if (content !== textarea.value) {
-    const temp = textarea.value;
+  const temp = editorView.state.doc.toString();
+  if (content !== temp) {
     try {
       const response = await fetch(window.location.href, {
         body: JSON.stringify({ method: "edit", text: temp }),
@@ -38,7 +67,7 @@ const uploadContent = async () => {
       if (response.redirected) {
         window.location.href = response.url;
       } else if (response.ok) {
-        if (temp === textarea.value) {
+        if (temp === editorView.state.doc.toString()) {
           statusElement.className = "status-success";
         }
         content = temp;
@@ -56,54 +85,47 @@ const uploadContent = async () => {
 };
 
 const statusElement = document.getElementById("status");
-const textarea = document.getElementById("textarea");
-let content = textarea.value;
-const markdown = document.getElementById("markdown");
+const markdownElement = document.getElementById("markdown");
 
+let content = editorView.state.doc.toString();
 uploadContent();
 
 const md = initMarkdownIt();
-textarea.addEventListener("input", (e) => {
-  if (content === textarea.value) {
-    statusElement.className = "status-success";
-  } else {
-    statusElement.className = "status-attention";
-  }
-  markdown.innerHTML = md.render(e.target.value);
-});
-markdown.innerHTML = md.render(content);
+markdownElement.innerHTML = md.render(content);
 
 let direction = window.innerWidth > 789 ? "horizontal" : "vertical";
-let splitH = initSplit(["#textarea", "#markdown"], direction, "h");
+let splitH = initSplit(["#codemirror", "#markdown"], direction, "h");
 
 window.addEventListener("resize", () => {
   const newDirection = window.innerWidth > 789 ? "horizontal" : "vertical";
   if (newDirection !== direction) {
     direction = newDirection;
     splitH.destroy();
-    splitH = initSplit(["#textarea", "#markdown"], direction, "h");
+    splitH = initSplit(["#codemirror", "#markdown"], direction, "h");
   }
 });
 
 initSplit(["#editor", "#file-drop"], "vertical", "v");
 
+document.getElementById("loader").style.display = "none";
+
 const fileDropElement = document.getElementById("file-drop");
 const inputFileElement = document.getElementById("input-file");
 const filesElement = document.getElementById("files");
-const loaderElement = document.getElementById("loader");
+const filesLoaderElement = document.getElementById("files-loader");
 
 let dragCounter = 0;
 
 fileDropElement.addEventListener("dragenter", (e) => {
   e.preventDefault();
-  if (loaderElement.style.display === "none") {
+  if (filesLoaderElement.style.display === "none") {
     dragCounter++;
     fileDropElement.classList.add("files-drag-enter");
   }
 });
 fileDropElement.addEventListener("dragleave", (e) => {
   e.preventDefault();
-  if (loaderElement.style.display === "none") {
+  if (filesLoaderElement.style.display === "none") {
     dragCounter--;
     if (dragCounter === 0) {
       fileDropElement.classList.remove("files-drag-enter");
@@ -115,7 +137,7 @@ fileDropElement.addEventListener("dragover", (e) => {
 });
 fileDropElement.addEventListener("drop", (e) => {
   e.preventDefault();
-  if (loaderElement.style.display === "none") {
+  if (filesLoaderElement.style.display === "none") {
     dragCounter = 0;
     fileDropElement.classList.remove("files-drag-enter");
     uploadFile(e.dataTransfer.files, e.dataTransfer.items);
@@ -132,7 +154,7 @@ inputFileElement.addEventListener("change", (e) => {
 
 const getFiles = async () => {
   try {
-    loaderElement.style.display = "flex";
+    filesLoaderElement.style.display = "flex";
 
     const response = await fetch(window.location.href, {
       body: JSON.stringify({ method: "files" }),
@@ -152,9 +174,10 @@ const getFiles = async () => {
         filesElement.appendChild(createFileElement(file));
       });
     }
-  } catch {
+  } catch (e) {
+    console.log(e);
   } finally {
-    loaderElement.style.display = "none";
+    filesLoaderElement.style.display = "none";
   }
 };
 
@@ -168,11 +191,11 @@ const createFileElement = (filename) => {
   filenameElement.innerText = filename;
   fileElement.appendChild(filenameElement);
 
-  const svg = document.createElementNS(svgNS, "svg");
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("width", "1em");
   svg.setAttribute("height", "1em");
   svg.setAttribute("viewBox", "0 0 24 24");
-  const path = document.createElementNS(svgNS, "path");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("fill", "currentColor");
   path.setAttribute(
     "d",
@@ -185,7 +208,7 @@ const createFileElement = (filename) => {
   removeElement.addEventListener("click", async () => {
     if (confirm(`Do you really want to remove ${filename}?`)) {
       try {
-        loaderElement.style.display = "flex";
+        filesLoaderElement.style.display = "flex";
 
         const response = await fetch(window.location.href, {
           body: JSON.stringify({ method: "fileRemove", filename: filename }),
@@ -200,7 +223,7 @@ const createFileElement = (filename) => {
           throw new Error();
         }
       } catch {
-        loaderElement.style.display = "none";
+        filesLoaderElement.style.display = "none";
         alert(`Remove ${filename} failed!`);
       }
     }
@@ -223,7 +246,7 @@ const uploadFile = async (files, items) => {
   }
 
   try {
-    loaderElement.style.display = "flex";
+    filesLoaderElement.style.display = "flex";
 
     const formData = new FormData();
     formData.append("file", files[0]);
@@ -240,7 +263,7 @@ const uploadFile = async (files, items) => {
       throw new Error();
     }
   } catch {
-    loaderElement.style.display = "none";
+    filesLoaderElement.style.display = "none";
     alert("Upload failed!");
   }
 };

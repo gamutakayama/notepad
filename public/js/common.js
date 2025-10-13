@@ -1,81 +1,4 @@
-document.querySelectorAll(".menu-item").forEach((item) => {
-  const title = item.querySelector(".menu-item > a");
-  const dropdown = item.querySelector(".menu-dropdown");
-
-  if (title && dropdown) {
-    title.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      item.classList.toggle("open");
-      document.querySelectorAll(".menu-item").forEach((other) => {
-        if (other !== item) {
-          other.classList.remove("open");
-        }
-      });
-    });
-    dropdown.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
-  }
-});
-document.addEventListener("click", () => {
-  document.querySelectorAll(".menu-item").forEach((item) => {
-    item.classList.remove("open");
-  });
-});
-
-const logoutElement = document.getElementById("logout");
-if (logoutElement) {
-  logoutElement.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    if (confirm("Do you really want to logout?")) {
-      try {
-        const response = await fetch("/logout", { method: "POST" });
-        if (response.ok) {
-          location.reload();
-        } else {
-          throw new Error();
-        }
-      } catch {
-        alert("Logout failed!");
-      }
-    }
-  });
-}
-
-const copyRawElement = document.getElementById("copy-raw");
-if (copyRawElement) {
-  copyRawElement.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    if (copyRawElement.innerText === "Raw") {
-      navigator.clipboard.writeText(getCopyRawText());
-      copyRawElement.innerText = "Copied!";
-      setTimeout(() => {
-        copyRawElement.innerText = "Raw";
-      }, 1000);
-    }
-  });
-}
-
-const copyLinkElement = document.getElementById("copy-link");
-if (copyLinkElement) {
-  copyLinkElement.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    if (copyLinkElement.innerText === "Link") {
-      navigator.clipboard.writeText(window.location.href);
-      copyLinkElement.innerText = "Copied!";
-      setTimeout(() => {
-        copyLinkElement.innerText = "Link";
-      }, 1000);
-    }
-  });
-}
-
-const initMarkdownIt = () => {
+export const initMarkdownIt = () => {
   const md = window
     .markdownit({ html: true, linkify: true })
     .use(window.markdownitTaskLists);
@@ -119,15 +42,13 @@ const initMarkdownIt = () => {
   return md;
 };
 
-const getPathnameLastSegment = () => {
+export const getPathnameLastSegment = () => {
   const segments = window.location.pathname.split("/");
 
   return segments.pop() || segments.pop();
 };
 
-const svgNS = "http://www.w3.org/2000/svg";
-
-const initSplit = (elements, direction, key) => {
+export const initSplit = (elements, direction, key) => {
   const storageKey = `split-${key}-${getPathnameLastSegment()}`;
 
   let sizes = localStorage.getItem(storageKey);
@@ -139,13 +60,16 @@ const initSplit = (elements, direction, key) => {
       const gutter = document.createElement("div");
       gutter.className = `gutter gutter-${direction}`;
 
-      const svg = document.createElementNS(svgNS, "svg");
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("width", "16");
       svg.setAttribute("height", "16");
       svg.setAttribute("viewBox", "0 0 16 16");
       svg.setAttribute("fill", "currentColor");
 
-      const path = document.createElementNS(svgNS, "path");
+      const path = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path"
+      );
       if (direction === "horizontal") {
         path.setAttribute(
           "d",

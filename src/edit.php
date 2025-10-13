@@ -245,7 +245,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <div class="menu-item">
       <a href="">File</a>
       <div class="menu-dropdown">
-        <a class="menu-dropdown-item" href="/edit/">New</a>
+        <a class="menu-dropdown-item" href="" id="new">New</a>
         <a class="menu-dropdown-item" href="/<?= $_GET["note"]; ?>">View</a>
         <div class="menu-dropdown-divider"></div>
         <a class="menu-dropdown-item" href="" id="delete">Delete</a>
@@ -264,11 +264,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php endif; ?>
   </div>
   <div id="editor">
-    <textarea autofocus id="textarea"><?php
-                                      if (is_file($mdFilename)) {
-                                        echo htmlspecialchars(file_get_contents($mdFilename), ENT_QUOTES, "UTF-8");
-                                      }
-                                      ?></textarea>
+    <div id="codemirror"></div>
     <div class="markdown-body" id="markdown"></div>
   </div>
   <div id="file-drop">
@@ -279,15 +275,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </span>
     <input id="input-file" style="display: none" type="file">
     <div id="files"></div>
-    <div id="loader">
-      <div class="loader"></div>
+    <div id="files-loader">
+      <div class="files-loader"></div>
     </div>
+  </div>
+  <div id="loader">
+    <div class="loader"></div>
   </div>
   <script src="/public/js/markdown-it-14.1.0.min.js"></script>
   <script src="/public/js/markdown-it-task-lists-2.1.0.min.js"></script>
   <script src="/public/js/split-1.6.5.min.js"></script>
-  <script src="/public/js/common.js"></script>
-  <script src="/public/js/edit.js"></script>
+  <script>
+    window.editorViewDoc = <?php
+                            if (is_file($mdFilename)) {
+                              echo json_encode(file_get_contents($mdFilename));
+                            } else {
+                              echo '""';
+                            }
+                            ?>;
+  </script>
+  <script src="/public/js/edit.js" type="module"></script>
 </body>
 
 </html>

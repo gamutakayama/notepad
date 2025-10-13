@@ -131,7 +131,7 @@ if (!$content && !$filenames) {
     <div class="menu-item">
       <a href="">File</a>
       <div class="menu-dropdown">
-        <a class="menu-dropdown-item" href="/edit/">New</a>
+        <a class="menu-dropdown-item" href="" id="new">New</a>
         <a class="menu-dropdown-item" href="/edit/<?= $_GET["note"]; ?>">Edit</a>
       </div>
     </div>
@@ -154,9 +154,11 @@ if (!$content && !$filenames) {
   <script src="/public/js/markdown-it-14.1.0.min.js"></script>
   <script src="/public/js/markdown-it-task-lists-2.1.0.min.js"></script>
   <script src="/public/js/split-1.6.5.min.js"></script>
-  <script src="/public/js/common.js"></script>
-  <script>
-    const getCopyRawText = () => content;
+  <script type="module">
+    import { initMarkdownIt, initSplit } from "/public/js/common.js";
+    import { setupCopyRaw } from "/public/js/menu.js";
+
+    setupCopyRaw(() => content);
 
     let content = <?= json_encode($content); ?>;
     const doc = new DOMParser().parseFromString(content, "text/html");

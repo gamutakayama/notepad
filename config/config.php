@@ -11,10 +11,6 @@ define("PASSWORD", getenv("PASSWORD") ?: "");
 
 define("JWT_KEY", getenv("JWT_KEY") ?: "");
 
-define("HOSTED_ON", getenv("HOSTED_ON") ?: "");
-
-define("HOSTED_ON_URL", getenv("HOSTED_ON_URL") ?: "");
-
 define("TELEGRAM_BOT_TOKEN", getenv("TELEGRAM_BOT_TOKEN") ?: "");
 
 define("TELEGRAM_CHAT_ID", getenv("TELEGRAM_CHAT_ID") ?: "");

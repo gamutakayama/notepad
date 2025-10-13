@@ -113,55 +113,21 @@ $notes = array_values(array_unique(array_filter(
 
 <body>
   <div class="menu">
-    <span class="title" title="<?= SITE_TITLE; ?> - v2025.8.14"><?= SITE_TITLE; ?></span>
-    <a href="/edit/">New</a>
+    <span class="title" title="<?= SITE_TITLE; ?> - v2025.10.13"><?= SITE_TITLE; ?></span>
+    <a href="" id="new">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
     <?php endif; ?>
   </div>
   <div class="markdown-body" id="markdown"></div>
   <script src="/public/js/markdown-it-14.1.0.min.js"></script>
+  <script src="/public/js/menu.js" type="module"></script>
   <script>
-    const logoutElement = document.getElementById("logout");
-    if (logoutElement) {
-      logoutElement.addEventListener("click", async (e) => {
-        e.preventDefault();
-
-        if (confirm("Do you really want to logout?")) {
-          try {
-            const response = await fetch("/logout", {
-              method: "POST"
-            });
-            if (response.ok) {
-              location.reload();
-            } else {
-              throw new Error();
-            }
-          } catch {
-            alert("Logout failed!");
-          }
-        }
-      });
-    }
-
     const notes = <?= json_encode($notes); ?>;
     const list = notes.map((note, index) => `${index + 1}. [${note}](${note})`).join("\n");
-    const hostedOn = "<?= HOSTED_ON; ?>";
-    const hostedOnUrl = "<?= HOSTED_ON_URL; ?>";
+    const content = `# List\n\n${list}`;
 
-    let content = `# List\n\n${list}`;
-    if (hostedOn) {
-      if (hostedOnUrl) {
-        content = `${content}\n\nHosted on <a href="${hostedOnUrl}" target="_blank">${hostedOn}</a>`;
-      } else {
-        content = `${content}\n\nHosted on ${hostedOn}`;
-      }
-    }
-
-    const md = window.markdownit({
-      html: true
-    });
-    document.getElementById("markdown").innerHTML = md.render(content);
+    document.getElementById("markdown").innerHTML = window.markdownit().render(content);
   </script>
 </body>
 
