@@ -113,7 +113,7 @@ $notes = array_values(array_unique(array_filter(
 
 <body>
   <div class="menu">
-    <span class="title" title="<?= SITE_TITLE; ?> - v2025.10.13"><?= SITE_TITLE; ?></span>
+    <span class="title" title="<?= SITE_TITLE; ?> - v2025.10.13+1"><?= SITE_TITLE; ?></span>
     <a href="" id="new">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>

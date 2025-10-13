@@ -43,17 +43,21 @@ const debounce = (callback, wait) => {
   };
 };
 
-const onDocChanged = debounce((update) => {
+const renderMarkdown = debounce((docString) => {
+  markdownElement.innerHTML = md.render(docString);
+}, 500);
+
+const editorView = initCodeMirror((update) => {
   const docString = update.state.doc.toString();
+
   if (content === docString) {
     statusElement.className = "status-success";
   } else {
     statusElement.className = "status-attention";
   }
-  markdownElement.innerHTML = md.render(docString);
-}, 500);
 
-const editorView = initCodeMirror(onDocChanged);
+  renderMarkdown(docString);
+});
 
 const uploadContent = async () => {
   const temp = editorView.state.doc.toString();
