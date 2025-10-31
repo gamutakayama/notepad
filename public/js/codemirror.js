@@ -16,11 +16,9 @@ import {
 import {
   bracketMatching,
   codeFolding,
-  defaultHighlightStyle,
   foldGutter,
   indentOnInput,
   indentUnit,
-  syntaxHighlighting,
 } from "https://esm.sh/@codemirror/language";
 import { Compartment, EditorState } from "https://esm.sh/@codemirror/state";
 import {
@@ -111,8 +109,6 @@ export const initCodeMirror = (onDocChanged) => {
       theme.of(darkMQL.matches ? dark : light),
     ],
   });
-
-  editorView.focus();
 
   darkMQL.addEventListener("change", (e) => {
     editorView.dispatch({

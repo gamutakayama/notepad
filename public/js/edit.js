@@ -271,3 +271,13 @@ const uploadFile = async (files, items) => {
     alert("Upload failed!");
   }
 };
+
+window.addEventListener("beforeunload", (e) => {
+  if (
+    (statusElement.className && statusElement.className !== "status-success") ||
+    filesLoaderElement.style.display !== "none"
+  ) {
+    e.preventDefault();
+    e.returnValue = true;
+  }
+});
