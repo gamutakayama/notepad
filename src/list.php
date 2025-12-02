@@ -5,16 +5,31 @@ require_once __DIR__ . "/utils.php";
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Expires: 0");
 
+checkPrivateMode("list");
+
 $directory = __DIR__ . "/../_notes";
 
-checkPrivateMode("list");
 checkDirectory($directory);
 
-$filenames = array_diff(scandir($directory), [".", "..", "login_fail.json"]);
-$notes = array_values(array_unique(array_filter(
-  array_map(fn($filename) => pathinfo($filename, PATHINFO_FILENAME), $filenames),
-  fn($filename) => $filename,
-)));
+$filenames = array_diff(scandir($directory), [".", ".."]);
+
+$notes = [];
+
+foreach ($filenames as $filename) {
+  if (is_dir("$directory/$filename")) {
+    if (checkFilename($filename)) {
+      $notes[] = $filename;
+    }
+  } else {
+    $info = pathinfo($filename);
+    $name = $info["filename"] ?? "";
+    $ext = $info["extension"] ?? "";
+
+    if ($ext === "md" && checkFilename($name) &&  !in_array($name, $notes)) {
+      $notes[] = $name;
+    }
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -107,28 +122,29 @@ $notes = array_values(array_unique(array_filter(
   <link rel="apple-touch-startup-image" href="/public/images/apple-splash-dark-1136-640.jpg" media="(prefers-color-scheme: dark) and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
   <link rel="manifest" href="/public/manifest.json">
   <title>List | <?= SITE_TITLE; ?></title>
-  <link rel="stylesheet" href="/public/css/github-markdown-5.8.1.min.css">
   <link rel="stylesheet" href="/public/css/index.css">
+  <link rel="stylesheet" href="/public/css/list.css">
 </head>
 
 <body>
   <div class="menu">
-    <span class="title" title="<?= SITE_TITLE; ?> - v2025.10.31"><?= SITE_TITLE; ?></span>
+    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2025.10.31')"><?= SITE_TITLE; ?></span>
     <a href="" id="new">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
     <?php endif; ?>
   </div>
-  <div class="markdown-body" id="markdown"></div>
-  <script src="/public/js/markdown-it-14.1.0.min.js"></script>
+  <div class="markdown-body" id="markdown">
+    <h1>List</h1>
+    <ol>
+      <?php foreach ($notes as $note): ?>
+        <li>
+          <a href="<?= $note; ?>"><?= $note; ?></a>
+        </li>
+      <?php endforeach; ?>
+    </ol>
+  </div>
   <script src="/public/js/menu.js" type="module"></script>
-  <script>
-    const notes = <?= json_encode($notes); ?>;
-    const list = notes.map((note, index) => `${index + 1}. [${note}](${note})`).join("\n");
-    const content = `# List\n\n${list}`;
-
-    document.getElementById("markdown").innerHTML = window.markdownit().render(content);
-  </script>
 </body>
 
 </html>

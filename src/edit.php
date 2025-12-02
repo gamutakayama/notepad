@@ -5,13 +5,15 @@ require_once __DIR__ . "/utils.php";
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Expires: 0");
 
-$directory = __DIR__ . "/../_notes";
+checkPrivateMode("edit");
 
 checkNoteName();
-checkPrivateMode("edit");
-checkDirectory($directory);
 
-$directory .= "/" . $_GET["note"];
+$rootDirectory = __DIR__ . "/../_notes";
+
+checkDirectory($rootDirectory);
+
+$directory = $rootDirectory . "/" . $_GET["note"];
 $mdFilename = "$directory.md";
 
 function deleteDirectory($directory)
@@ -48,6 +50,35 @@ function handleEdit($mdFilename, $text)
   if (!$success) {
     http_response_code(500);
   }
+}
+
+function handleRename($rootDirectory, $directory, $mdFilename, $newName)
+{
+  if (checkFilename($newName)) {
+    $newDirectory = "$rootDirectory/$newName";
+    $newMdFilename = "$newDirectory.md";
+
+    $result = true;
+
+    if (file_exists($newDirectory) || file_exists($newMdFilename)) {
+      $result = false;
+    } else {
+      if (is_dir($directory)) {
+        $result = rename($directory, $newDirectory);
+      }
+
+      if (is_file($mdFilename)) {
+        $result = rename($mdFilename, $newMdFilename);
+      }
+    }
+
+    if ($result) {
+      header("Location: /edit/$newName");
+      return;
+    }
+  }
+
+  http_response_code(400);
 }
 
 function handleDelete($directory, $mdFilename)
@@ -123,6 +154,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     switch ($data["method"] ?? "") {
       case "edit":
         handleEdit($mdFilename, $data["text"] ?? "");
+        break;
+      case "rename":
+        handleRename($rootDirectory, $directory, $mdFilename, $data["name"] ?? "");
         break;
       case "delete":
         handleDelete($directory, $mdFilename);
@@ -248,6 +282,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <a class="menu-dropdown-item" href="" id="new">New</a>
         <a class="menu-dropdown-item" href="/<?= $_GET["note"]; ?>">View</a>
         <div class="menu-dropdown-divider"></div>
+        <a class="menu-dropdown-item" href="" id="rename">Rename</a>
         <a class="menu-dropdown-item" href="" id="delete">Delete</a>
       </div>
     </div>
@@ -255,6 +290,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <a href="">Copy</a>
       <div class="menu-dropdown">
         <a class="menu-dropdown-item" href="" id="copy-raw">Raw</a>
+        <a class="menu-dropdown-item" href="" id="copy-text">Text</a>
         <a class="menu-dropdown-item" href="" id="copy-link">Link</a>
       </div>
     </div>

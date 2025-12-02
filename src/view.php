@@ -5,10 +5,15 @@ require_once __DIR__ . "/utils.php";
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Expires: 0");
 
-checkNoteName();
 checkPrivateMode("view");
 
-$directory = __DIR__ . "/../_notes/" . $_GET["note"];
+checkNoteName();
+
+$directory = __DIR__ . "/../_notes";
+
+checkDirectory($directory);
+
+$directory .= "/" . $_GET["note"];
 $mdFilename = "$directory.md";
 
 $content = "";
@@ -139,6 +144,7 @@ if (!$content && !$filenames) {
       <a href="">Copy</a>
       <div class="menu-dropdown">
         <a class="menu-dropdown-item" href="" id="copy-raw">Raw</a>
+        <a class="menu-dropdown-item" href="" id="copy-text">Text</a>
         <a class="menu-dropdown-item" href="" id="copy-link">Link</a>
       </div>
     </div>

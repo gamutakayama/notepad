@@ -1,4 +1,4 @@
-import { initCodeMirror } from "/public/js/codemirror.js";
+import { initCodeMirror } from "/public/js/codemirror.min.js";
 import {
   getPathnameLastSegment,
   initMarkdownIt,
@@ -7,6 +7,33 @@ import {
 import { setupCopyRaw } from "/public/js/menu.js";
 
 setupCopyRaw(() => editorView.state.doc.toString());
+
+const renameElement = document.getElementById("rename");
+if (renameElement) {
+  renameElement.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const name = prompt("Please enter a new note name.");
+    if (name) {
+      try {
+        const response = await fetch(window.location.href, {
+          body: JSON.stringify({ method: "rename", name }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        });
+        if (response.redirected) {
+          window.location.href = response.url;
+        } else if (response.ok) {
+          window.open("/", "_self");
+        } else {
+          throw new Error();
+        }
+      } catch {
+        alert("Rename failed!");
+      }
+    }
+  });
+}
 
 const deleteElement = document.getElementById("delete");
 if (deleteElement) {
