@@ -128,7 +128,7 @@ foreach ($filenames as $filename) {
 
 <body>
   <div class="menu">
-    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2025.12.02')"><?= SITE_TITLE; ?></span>
+    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2025.12.2')"><?= SITE_TITLE; ?></span>
     <a href="" id="new">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
