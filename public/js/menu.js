@@ -64,7 +64,7 @@ export const setupCopyRaw = (getText) => {
       e.preventDefault();
 
       if (copyRawElement.innerText === "Raw") {
-        navigator.clipboard.writeText(getText());
+        copyToClipboard(getText());
         copyRawElement.innerText = "Copied!";
         setTimeout(() => {
           copyRawElement.innerText = "Raw";
@@ -80,9 +80,7 @@ if (copyTextElement) {
     e.preventDefault();
 
     if (copyTextElement.innerText === "Text") {
-      navigator.clipboard.writeText(
-        document.getElementById("markdown").textContent
-      );
+      copyToClipboard(document.getElementById("markdown").textContent);
       copyTextElement.innerText = "Copied!";
       setTimeout(() => {
         copyTextElement.innerText = "Text";
@@ -97,7 +95,7 @@ if (copyLinkElement) {
     e.preventDefault();
 
     if (copyLinkElement.innerText === "Link") {
-      navigator.clipboard.writeText(window.location.href);
+      copyToClipboard(window.location.href);
       copyLinkElement.innerText = "Copied!";
       setTimeout(() => {
         copyLinkElement.innerText = "Link";
@@ -105,3 +103,33 @@ if (copyLinkElement) {
     }
   });
 }
+
+const copyToClipboard = (data) => {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(data);
+  } else {
+    const fakeElement = document.createElement("textarea");
+    fakeElement.style.border = "0";
+    fakeElement.style.fontSize = "12pt";
+    fakeElement.style.margin = "0";
+    fakeElement.style.padding = "0";
+    fakeElement.style.position = "absolute";
+
+    const isRTL = document.documentElement.getAttribute("dir") === "rtl";
+    fakeElement.style[isRTL ? "right" : "left"] = "-9999px";
+    const yPosition = window.pageYOffset || document.documentElement.scrollTop;
+    fakeElement.style.top = `${yPosition}px`;
+
+    fakeElement.setAttribute("readonly", "");
+    fakeElement.value = data;
+
+    document.body.appendChild(fakeElement);
+
+    fakeElement.select();
+    fakeElement.setSelectionRange(0, fakeElement.value.length);
+
+    document.execCommand("copy");
+
+    fakeElement.remove();
+  }
+};
