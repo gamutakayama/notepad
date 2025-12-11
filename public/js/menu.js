@@ -1,3 +1,5 @@
+const loaderElement = document.getElementById("loader");
+
 document.querySelectorAll(".menu-item").forEach((item) => {
   const title = item.querySelector(".menu-item > a");
   const dropdown = item.querySelector(".menu-dropdown");
@@ -44,6 +46,8 @@ if (logoutElement) {
 
     if (confirm("Do you really want to logout?")) {
       try {
+        loaderElement.style.display = "flex";
+
         const response = await fetch("/logout", { method: "POST" });
         if (response.ok) {
           location.reload();
@@ -51,6 +55,7 @@ if (logoutElement) {
           throw new Error();
         }
       } catch {
+        loaderElement.style.display = "none";
         alert("Logout failed!");
       }
     }

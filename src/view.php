@@ -157,6 +157,9 @@ if (!$content && !$filenames) {
   <?php if ($filenames): ?>
     <div class="markdown-body" id="files"></div>
   <?php endif; ?>
+  <div id="loader">
+    <div class="loader"></div>
+  </div>
   <script src="/public/js/markdown-it-14.1.0.min.js"></script>
   <script src="/public/js/markdown-it-task-lists-2.1.0.min.js"></script>
   <script src="/public/js/split-1.6.5.min.js"></script>

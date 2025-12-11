@@ -128,7 +128,7 @@ foreach ($filenames as $filename) {
 
 <body>
   <div class="menu">
-    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2025.12.3')"><?= SITE_TITLE; ?></span>
+    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2025.12.11')"><?= SITE_TITLE; ?></span>
     <a href="" id="new">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
@@ -143,6 +143,9 @@ foreach ($filenames as $filename) {
         </li>
       <?php endforeach; ?>
     </ol>
+  </div>
+  <div id="loader">
+    <div class="loader"></div>
   </div>
   <script src="/public/js/menu.js" type="module"></script>
 </body>

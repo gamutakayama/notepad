@@ -6,18 +6,22 @@ import {
 } from "/public/js/common.js";
 import { setupCopyRaw } from "/public/js/menu.js";
 
-setupCopyRaw(() => editorView.state.doc.toString());
+const loaderElement = document.getElementById("loader");
 
 const renameElement = document.getElementById("rename");
 if (renameElement) {
   renameElement.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const name = prompt("Please enter a new note name.");
-    if (name) {
+    const oldName = window.location.href.split("/").pop();
+    const newName = prompt("Please enter a new note name.", oldName);
+
+    if (newName !== oldName) {
       try {
+        loaderElement.style.display = "flex";
+
         const response = await fetch(window.location.href, {
-          body: JSON.stringify({ method: "rename", name }),
+          body: JSON.stringify({ method: "rename", name: newName }),
           headers: { "Content-Type": "application/json" },
           method: "POST",
         });
@@ -29,6 +33,7 @@ if (renameElement) {
           throw new Error();
         }
       } catch {
+        loaderElement.style.display = "none";
         alert("Rename failed!");
       }
     }
@@ -42,6 +47,8 @@ if (deleteElement) {
 
     if (confirm("Do you really want to delete?")) {
       try {
+        loaderElement.style.display = "flex";
+
         const response = await fetch(window.location.href, {
           body: JSON.stringify({ method: "delete" }),
           headers: { "Content-Type": "application/json" },
@@ -55,11 +62,14 @@ if (deleteElement) {
           throw new Error();
         }
       } catch {
+        loaderElement.style.display = "none";
         alert("Delete failed!");
       }
     }
   });
 }
+
+setupCopyRaw(() => editorView.state.doc.toString());
 
 const debounce = (callback, wait) => {
   let timeoutId = null;
@@ -138,7 +148,7 @@ window.addEventListener("resize", () => {
 
 initSplit(["#editor", "#file-drop"], "vertical", "v");
 
-document.getElementById("loader").style.display = "none";
+loaderElement.style.display = "none";
 
 const fileDropElement = document.getElementById("file-drop");
 const inputFileElement = document.getElementById("input-file");

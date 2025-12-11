@@ -202,6 +202,51 @@ a:not([href]) {
   white-space: nowrap;
 }
 
+#loader {
+  align-items: center;
+  bottom: 0;
+  display: none;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2000;
+}
+
+#loader::before,
+#files-loader::before {
+  background-color: var(--bgColor-default);
+  bottom: 0;
+  content: "";
+  left: 0;
+  opacity: 0.5;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.loader,
+.files-loader {
+  animation: rotation 1s linear infinite;
+  border: 4px solid var(--fgColor-accent);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @media not screen and (hover: none) and (pointer: coarse) {
   body {
     scrollbar-color: var(--scrollbar-color) transparent;
