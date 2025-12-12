@@ -16,7 +16,7 @@ if (renameElement) {
     const oldName = window.location.href.split("/").pop();
     const newName = prompt("Please enter a new note name.", oldName);
 
-    if (newName !== oldName) {
+    if (newName && newName !== oldName) {
       try {
         loaderElement.style.display = "flex";
 
