@@ -18,28 +18,35 @@ function redirect()
   die;
 }
 
-function canLogin($loginFailFilePath)
+function canLogin($filename)
 {
   $today = date("Y-m-d");
 
   $data = ["date" => $today, "count" => 0];
 
-  if (file_exists($loginFailFilePath)) {
-    $json = file_get_contents($loginFailFilePath);
+  if (file_exists($filename)) {
+    $json = file_get_contents($filename);
     $data = json_decode($json, true);
   }
 
   return $data["date"] !== $today || $data["count"] < 3;
 }
 
-function saveLoginFail($loginFailFilePath)
+function saveLog($filename, $time, $ip, $status)
+{
+  $data = "$time | $ip | $status\n";
+
+  file_put_contents($filename, $data, FILE_APPEND);
+}
+
+function saveFailed($filename)
 {
   $today = date("Y-m-d");
 
   $data = ["date" => $today, "count" => 0];
 
-  if (file_exists($loginFailFilePath)) {
-    $json = file_get_contents($loginFailFilePath);
+  if (file_exists($filename)) {
+    $json = file_get_contents($filename);
     $data = json_decode($json, true);
 
     if ($data["date"] === $today) {
@@ -51,19 +58,19 @@ function saveLoginFail($loginFailFilePath)
     $data["count"] = 1;
   }
 
-  file_put_contents($loginFailFilePath, json_encode($data));
+  file_put_contents($filename, json_encode($data));
 }
 
-function sendMessage($success)
+function sendMessage($message, $time, $ip)
 {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
     return;
   }
 
   $text = "<b>" . SITE_TITLE . " - " . $_SERVER["SERVER_NAME"] . "</b>\n\n";
-  $text .= "<b>" . ($success ? "✅ Login Successful" : "❌ Login Failed") . "</b>\n\n";
-  $text .= "Time: " . gmdate("Y-m-d\TH:i:s\Z") . "\n";
-  $text .= "IP: " . getClientIP();
+  $text .= "<b>$message</b>\n\n";
+  $text .= "Time: $time\n";
+  $text .= "IP: $ip";
 
   $params = [
     "chat_id" => TELEGRAM_CHAT_ID,
@@ -96,7 +103,11 @@ $directory = __DIR__ . "/../_notes";
 
 checkDirectory($directory);
 
-$loginFailFilePath = "$directory/login_fail.json";
+$logFilename = "$directory/login.log";
+$failedFilename = "$directory/login_failed.json";
+
+$time = gmdate("Y-m-d\TH:i:s\Z");
+$ip = getClientIP();
 
 $failed = false;
 
@@ -110,18 +121,20 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     die;
   }
 
-  if (canLogin($loginFailFilePath)) {
+  if (canLogin($failedFilename)) {
     $username = $_POST["username"] ?? "";
     $password = $_POST["password"] ?? "";
 
     if ($username === USERNAME && $password === PASSWORD) {
+      saveLog($logFilename, $time, $ip, "✅ Success");
       generateToken();
-      sendMessage(true);
+      sendMessage("✅ Login Success", $time, $ip);
       redirect();
     } else {
       $failed = true;
-      saveLoginFail($loginFailFilePath);
-      sendMessage(false);
+      saveLog($logFilename, $time, $ip, "❌ Failed");
+      saveFailed($failedFilename);
+      sendMessage("❌ Login Failed", $time, $ip);
     }
   } else {
     $failed = true;
