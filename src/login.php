@@ -32,9 +32,9 @@ function canLogin($filename)
   return $data["date"] !== $today || $data["count"] < 3;
 }
 
-function saveLog($filename, $time, $ip, $status)
+function saveLog($filename, $time, $ip, $status, $username, $password)
 {
-  $data = "$time | $ip | $status\n";
+  $data = "| $time | $ip | $status | $username | $password |\n";
 
   file_put_contents($filename, $data, FILE_APPEND);
 }
@@ -126,13 +126,13 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $password = $_POST["password"] ?? "";
 
     if ($username === USERNAME && $password === PASSWORD) {
-      saveLog($logFilename, $time, $ip, "✅ Success");
+      saveLog($logFilename, $time, $ip, "✅ Success", "-", "-");
       generateToken();
       sendMessage("✅ Login Success", $time, $ip);
       redirect();
     } else {
       $failed = true;
-      saveLog($logFilename, $time, $ip, "❌ Failed");
+      saveLog($logFilename, $time, $ip, "❌ Failed", $username, $password);
       saveFailed($failedFilename);
       sendMessage("❌ Login Failed", $time, $ip);
     }
