@@ -13,7 +13,7 @@ if (renameElement) {
   renameElement.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const oldName = window.location.href.split("/").pop();
+    const oldName = decodeURIComponent(getPathnameLastSegment());
     const newName = prompt("Please enter a new note name.", oldName);
 
     if (newName && newName !== oldName) {
@@ -240,7 +240,7 @@ const createFileElement = (filename) => {
   path.setAttribute("fill", "currentColor");
   path.setAttribute(
     "d",
-    "M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"
+    "M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z",
   );
   svg.appendChild(path);
 
