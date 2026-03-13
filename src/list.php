@@ -30,6 +30,56 @@ foreach ($filenames as $filename) {
     }
   }
 }
+
+$tree = [];
+foreach ($notes as $note) {
+  $current = &$tree;
+
+  $parts = explode("+", $note);
+
+  foreach ($parts as $i => $part) {
+    if (!isset($current[$part])) {
+      $current[$part] = [
+        "children" => [],
+        "isFile" => false,
+      ];
+    }
+
+    if ($i === count($parts) - 1) {
+      $current[$part]["isFile"] = true;
+    }
+
+    $current = &$current[$part]["children"];
+  }
+}
+
+function renderTree($tree, $path = "")
+{
+  $html = "<ol>";
+
+  foreach ($tree as $name => $node) {
+    $filePath = $path === "" ? $name : "$path+$name";
+
+    $html .= "<li>";
+
+    if ($node["isFile"]) {
+      $html .= "<a href=\"$filePath\">$name</a>";
+    } else {
+      $html .= $name;
+    }
+
+    if ($node["children"]) {
+      $html .= renderTree($node["children"], $filePath);
+    }
+
+    $html .= "</li>";
+  }
+
+  $html .= "</ol>";
+
+  return $html;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -128,7 +178,7 @@ foreach ($filenames as $filename) {
 
 <body>
   <div class="menu">
-    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2026.3.11')"><?= SITE_TITLE; ?></span>
+    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2026.3.13')"><?= SITE_TITLE; ?></span>
     <a href="" id="new">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
@@ -136,13 +186,7 @@ foreach ($filenames as $filename) {
   </div>
   <div class="markdown-body" id="markdown">
     <h1>List</h1>
-    <ol>
-      <?php foreach ($notes as $note): ?>
-        <li>
-          <a href="<?= $note; ?>"><?= $note; ?></a>
-        </li>
-      <?php endforeach; ?>
-    </ol>
+    <?= renderTree($tree); ?>
   </div>
   <div id="loader">
     <div class="loader"></div>

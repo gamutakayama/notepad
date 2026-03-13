@@ -99,7 +99,7 @@ function checkFilename($filename)
 {
   return $filename !== "" &&
     mb_strlen($filename, "UTF-8") <= 64 &&
-    preg_match("/^[a-zA-Z0-9\x{4e00}-\x{9fa5}_-]+$/u", $filename);
+    preg_match("/^[a-zA-Z0-9\x{4e00}-\x{9fa5}_-]+(?:\+[a-zA-Z0-9\x{4e00}-\x{9fa5}_-]+)*$/u", $filename);
 }
 
 function checkNoteName()
