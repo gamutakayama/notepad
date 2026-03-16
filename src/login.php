@@ -8,11 +8,8 @@ header("Expires: 0");
 function redirect()
 {
   $redirect = "/";
-  if (isset($_GET["redirect"])) {
-    $redirect = urldecode($_GET["redirect"]);
-    if (!preg_match("#^/.*$#", $redirect)) {
-      $redirect = "/";
-    }
+  if (isset($_GET["redirect"]) && preg_match("#^/.*$#", $_GET["redirect"])) {
+    $redirect = $_GET["redirect"];
   }
   header("Location: $redirect");
   die;
