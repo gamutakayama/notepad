@@ -237,18 +237,20 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
 </head>
 
 <body>
-  <img alt="<?= SITE_TITLE; ?>" class="logo" height="48" loading="lazy" src="/public/images/favicon.svg">
-  <h1>Sign in to <?= SITE_TITLE; ?></h1>
-  <?php if ($failed): ?>
-    <div class="error">Incorrect username or password.</div>
-  <?php endif; ?>
-  <form action="" id="form" method="POST">
-    <label for="username">Username</label>
-    <input autocapitalize="off" autocomplete="username" autocorrect="off" autofocus id="username" name="username" required type="text">
-    <label for="password">Password</label>
-    <input autocomplete="current-password" id="password" name="password" required type="password">
-    <input type="submit" value="Sign in">
-  </form>
+  <main>
+    <img alt="<?= SITE_TITLE; ?>" class="logo" height="44" loading="lazy" src="/public/images/favicon.svg">
+    <h1>Sign in to <?= SITE_TITLE; ?></h1>
+    <?php if ($failed): ?>
+      <div class="error">Incorrect username or password.</div>
+    <?php endif; ?>
+    <form action="" id="form" method="POST">
+      <label for="username">Username</label>
+      <input autocapitalize="off" autocomplete="username" autocorrect="off" autofocus id="username" name="username" required type="text">
+      <label for="password">Password</label>
+      <input autocomplete="current-password" id="password" name="password" required type="password">
+      <input type="submit" value="Sign in">
+    </form>
+  </main>
   <script>
     const form = document.getElementById("form");
     form.addEventListener("submit", (e) => {

@@ -132,7 +132,9 @@ if (!$content && !$filenames) {
 
 <body>
   <div class="menu">
-    <span class="title"><?= $_GET["note"]; ?></span>
+    <span class="title" onclick="alert('<?= $_GET['note']; ?>')">
+      <?= end(explode("+", $_GET["note"])); ?>
+    </span>
     <div class="menu-item">
       <a href="">File</a>
       <div class="menu-dropdown">

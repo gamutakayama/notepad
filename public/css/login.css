@@ -1,48 +1,49 @@
 body {
-  align-items: center;
   background-color: var(--bgColor-default);
-  display: flex;
-  flex-direction: column;
   font-size: 14px;
   padding: 0;
 }
 
+main {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 48px 16px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
 .logo {
-  margin-bottom: 24px;
-  margin-top: 32px;
+  margin-bottom: 16px;
 }
 
 h1 {
-  font-size: 24px;
-  font-weight: 300;
-  letter-spacing: -0.5px;
-  margin-bottom: 0;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
   margin-top: 0;
+  text-align: center;
 }
 
 .error {
   background-color: var(--bgColor-danger-muted);
   border: 1px solid var(--borderColor-danger-muted);
   border-radius: 6px;
-  color: var(--fgColor-default);
-  margin-top: 16px;
+  margin: 4px 0;
   padding: 16px;
   text-align: center;
-  width: 288px;
+  width: 100%;
 }
 
 form {
-  background-color: var(--bgColor-muted);
-  border: 1px solid var(--borderColor-muted);
-  border-radius: 6px;
-  margin-top: 16px;
-  padding: 16px;
-  width: 288px;
+  margin-top: 8px;
+  width: 100%;
 }
 
 label {
   display: block;
-  margin-bottom: 8px;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
 input[type="text"],
@@ -51,12 +52,14 @@ input[type="password"] {
   border: 1px solid var(--control-borderColor-rest);
   border-radius: 6px;
   box-shadow: var(--shadow-inset);
-  color: var(--fgColor-default);
+  color: inherit;
   display: block;
   font-family: inherit;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 16px;
+  line-height: 28px;
   margin-bottom: 16px;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
   padding: 5px 12px;
   transition: all 100ms cubic-bezier(0.33, 1, 0.68, 1);
   width: 100%;
@@ -65,22 +68,19 @@ input[type="password"] {
 input[type="text"]:focus,
 input[type="password"]:focus {
   box-shadow: none;
-  outline: 2px solid var(--focus-outlineColor);
-  outline-offset: -2px;
+  outline-color: var(--focus-outlineColor);
 }
 
 input[type="text"]:focus:not(:focus-visible),
 input[type="password"]:focus:not(:focus-visible) {
   box-shadow: none;
-  outline: 1px solid var(--focus-outlineColor);
-  outline-offset: -1px;
+  outline-color: transparent;
 }
 
 input[type="text"]:focus-visible,
 input[type="password"]:focus-visible {
   box-shadow: none;
-  outline: 2px solid var(--focus-outlineColor);
-  outline-offset: -2px;
+  outline-color: var(--focus-outlineColor);
 }
 
 input[type="submit"] {
@@ -95,7 +95,9 @@ input[type="submit"] {
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
-  line-height: 20px;
+  line-height: 28px;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
   padding: 5px 16px;
   transition: all 100ms cubic-bezier(0.33, 1, 0.68, 1);
   user-select: none;
@@ -112,20 +114,17 @@ input[type="submit"]:hover {
 
 input[type="submit"]:focus {
   box-shadow: inset 0 0 0 3px var(--fgColor-onEmphasis);
-  outline: 2px solid var(--focus-outlineColor);
-  outline-offset: -2px;
+  outline-color: var(--focus-outlineColor);
 }
 
 input[type="submit"]:focus:not(:focus-visible) {
   box-shadow: none;
-  outline: 2px solid transparent;
-  outline-offset: -2px;
+  outline-color: transparent;
 }
 
 input[type="submit"]:focus-visible {
   box-shadow: inset 0 0 0 3px var(--fgColor-onEmphasis);
-  outline: 2px solid var(--focus-outlineColor);
-  outline-offset: -2px;
+  outline-color: var(--focus-outlineColor);
 }
 
 input[type="submit"]:active {
@@ -136,20 +135,14 @@ input[type="submit"]:active {
 input[type="submit"]:disabled {
   background-color: var(--button-primary-bgColor-disabled);
   border-color: var(--button-primary-borderColor-disabled);
+  box-shadow: none;
   color: var(--button-primary-fgColor-disabled);
   cursor: default;
 }
 
-@supports (-webkit-touch-callout: none) {
-  input[type="text"],
-  input[type="password"] {
-    font-size: 16px;
-  }
-
-  @media (min-width: 768px) {
-    input[type="text"],
-    input[type="password"] {
-      font-size: 14px;
-    }
+@media (min-width: 544px) {
+  main {
+    margin: 0 auto;
+    width: 384px;
   }
 }
