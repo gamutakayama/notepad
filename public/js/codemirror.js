@@ -62,7 +62,7 @@ export const initCodeMirror = (onDocChanged) => {
 
           const svg = document.createElementNS(
             "http://www.w3.org/2000/svg",
-            "svg"
+            "svg",
           );
           svg.setAttribute("width", "16");
           svg.setAttribute("height", "16");
@@ -71,17 +71,17 @@ export const initCodeMirror = (onDocChanged) => {
 
           const path = document.createElementNS(
             "http://www.w3.org/2000/svg",
-            "path"
+            "path",
           );
           if (open) {
             path.setAttribute(
               "d",
-              "M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"
+              "M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z",
             );
           } else {
             path.setAttribute(
               "d",
-              "M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"
+              "M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z",
             );
           }
 
@@ -128,7 +128,7 @@ const insertIndent = ({ state, dispatch }) => {
     state.update(state.replaceSelection(state.facet(indentUnit)), {
       scrollIntoView: true,
       userEvent: "input",
-    })
+    }),
   );
 
   return true;

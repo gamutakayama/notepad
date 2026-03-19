@@ -1,4 +1,3 @@
-import { initCodeMirror } from "/public/js/codemirror.min.js";
 import {
   getPathnameLastSegment,
   initMarkdownIt,
@@ -69,35 +68,18 @@ if (deleteElement) {
   });
 }
 
-setupCopyRaw(() => editorView.state.doc.toString());
+setupCopyRaw(() => getContent());
 
-const debounce = (callback, wait) => {
-  let timeoutId = null;
-
-  return (...args) => {
-    window.clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => callback(...args), wait);
-  };
+const getContent = () => {
+  if (window.markdownEnabled) {
+    return editorView.state.doc.toString();
+  } else {
+    return textareaElement.value;
+  }
 };
 
-const renderMarkdown = debounce((docString) => {
-  markdownElement.innerHTML = md.render(docString);
-}, 500);
-
-const editorView = initCodeMirror((update) => {
-  const docString = update.state.doc.toString();
-
-  if (content === docString) {
-    statusElement.className = "status-success";
-  } else {
-    statusElement.className = "status-attention";
-  }
-
-  renderMarkdown(docString);
-});
-
 const uploadContent = async () => {
-  const temp = editorView.state.doc.toString();
+  const temp = getContent();
   if (content !== temp) {
     try {
       const response = await fetch(window.location.href, {
@@ -108,7 +90,7 @@ const uploadContent = async () => {
       if (response.redirected) {
         window.location.href = response.url;
       } else if (response.ok) {
-        if (temp === editorView.state.doc.toString()) {
+        if (temp === getContent()) {
           statusElement.className = "status-success";
         }
         content = temp;
@@ -125,26 +107,79 @@ const uploadContent = async () => {
   }
 };
 
+const debounce = (callback, wait) => {
+  let timeoutId = null;
+
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => callback(...args), wait);
+  };
+};
+
+const renderMarkdown = debounce((md, docString) => {
+  const dirtyHTML = md.render(docString);
+  const cleanHTML = DOMPurify.sanitize(dirtyHTML, {
+    FORBID_TAGS: ["style"],
+  });
+  markdownElement.innerHTML = cleanHTML;
+}, 500);
+
 const statusElement = document.getElementById("status");
+const textareaElement = document.getElementById("textarea");
 const markdownElement = document.getElementById("markdown");
 
-let content = editorView.state.doc.toString();
+let content;
+let editorView;
+
+if (window.markdownEnabled) {
+  const { initCodeMirror } = await import("/public/js/codemirror.min.js");
+
+  editorView = initCodeMirror((update) => {
+    const docString = update.state.doc.toString();
+
+    if (content === docString) {
+      statusElement.className = "status-success";
+    } else {
+      statusElement.className = "status-attention";
+    }
+
+    renderMarkdown(md, docString);
+  });
+  editorView.focus();
+
+  content = editorView.state.doc.toString();
+
+  const md = initMarkdownIt();
+  const dirtyHTML = md.render(content);
+  const cleanHTML = DOMPurify.sanitize(dirtyHTML, {
+    FORBID_TAGS: ["style"],
+  });
+  markdownElement.innerHTML = cleanHTML;
+
+  let direction = window.innerWidth > 768 ? "horizontal" : "vertical";
+  let splitH = initSplit(["#codemirror", "#markdown"], direction, "h");
+
+  window.addEventListener("resize", () => {
+    const newDirection = window.innerWidth > 768 ? "horizontal" : "vertical";
+    if (newDirection !== direction) {
+      direction = newDirection;
+      splitH.destroy();
+      splitH = initSplit(["#codemirror", "#markdown"], direction, "h");
+    }
+  });
+} else {
+  content = textareaElement.value;
+
+  textareaElement.addEventListener("input", (e) => {
+    if (content === e.target.value) {
+      statusElement.className = "status-success";
+    } else {
+      statusElement.className = "status-attention";
+    }
+  });
+}
+
 uploadContent();
-
-const md = initMarkdownIt();
-markdownElement.innerHTML = md.render(content);
-
-let direction = window.innerWidth > 789 ? "horizontal" : "vertical";
-let splitH = initSplit(["#codemirror", "#markdown"], direction, "h");
-
-window.addEventListener("resize", () => {
-  const newDirection = window.innerWidth > 789 ? "horizontal" : "vertical";
-  if (newDirection !== direction) {
-    direction = newDirection;
-    splitH.destroy();
-    splitH = initSplit(["#codemirror", "#markdown"], direction, "h");
-  }
-});
 
 initSplit(["#editor", "#file-drop"], "vertical", "v");
 

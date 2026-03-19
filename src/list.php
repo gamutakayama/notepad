@@ -11,6 +11,8 @@ $directory = __DIR__ . "/../_notes";
 
 checkDirectory($directory);
 
+$fileExtension = getFileExtension();
+
 $filenames = array_diff(scandir($directory), [".", ".."]);
 
 $notes = [];
@@ -25,7 +27,7 @@ foreach ($filenames as $filename) {
     $name = $info["filename"] ?? "";
     $ext = $info["extension"] ?? "";
 
-    if ($ext === "md" && checkFilename($name) &&  !in_array($name, $notes)) {
+    if ($ext === $fileExtension && checkFilename($name) &&  !in_array($name, $notes)) {
       $notes[] = $name;
     }
   }
@@ -178,13 +180,13 @@ function renderTree($tree, $path = "")
 
 <body>
   <div class="menu">
-    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2026.3.16+1')"><?= SITE_TITLE; ?></span>
+    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2026.3.19')"><?= SITE_TITLE; ?></span>
     <a href="" id="new">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
     <?php endif; ?>
   </div>
-  <div class="markdown-body" id="markdown">
+  <div id="content">
     <h1>List</h1>
     <?= renderTree($tree); ?>
   </div>

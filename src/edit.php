@@ -14,7 +14,7 @@ $rootDirectory = __DIR__ . "/../_notes";
 checkDirectory($rootDirectory);
 
 $directory = $rootDirectory . "/" . $_GET["note"];
-$mdFilename = "$directory.md";
+$filename = $directory . "." . getFileExtension();
 
 function deleteDirectory($directory)
 {
@@ -37,14 +37,14 @@ function deleteDirectory($directory)
   return rmdir($directory);
 }
 
-function handleEdit($mdFilename, $text)
+function handleEdit($filename, $text)
 {
   $success = false;
 
   if (strlen($text)) {
-    $success = file_put_contents($mdFilename, $text);
+    $success = file_put_contents($filename, $text);
   } else {
-    $success = unlink($mdFilename);
+    $success = unlink($filename);
   }
 
   if (!$success) {
@@ -52,23 +52,23 @@ function handleEdit($mdFilename, $text)
   }
 }
 
-function handleRename($rootDirectory, $directory, $mdFilename, $newName)
+function handleRename($rootDirectory, $directory, $filename, $newName)
 {
   if (checkFilename($newName)) {
     $newDirectory = "$rootDirectory/$newName";
-    $newMdFilename = "$newDirectory.md";
+    $newFilename = $newDirectory . "." . getFileExtension();
 
     $result = true;
 
-    if (file_exists($newDirectory) || file_exists($newMdFilename)) {
+    if (file_exists($newDirectory) || file_exists($newFilename)) {
       $result = false;
     } else {
       if (is_dir($directory)) {
         $result = rename($directory, $newDirectory);
       }
 
-      if (is_file($mdFilename)) {
-        $result = rename($mdFilename, $newMdFilename);
+      if (is_file($filename)) {
+        $result = rename($filename, $newFilename);
       }
     }
 
@@ -81,11 +81,11 @@ function handleRename($rootDirectory, $directory, $mdFilename, $newName)
   http_response_code(400);
 }
 
-function handleDelete($directory, $mdFilename)
+function handleDelete($directory, $filename)
 {
   if (
     (is_dir($directory) && !deleteDirectory($directory)) ||
-    (is_file($mdFilename) && !unlink($mdFilename))
+    (is_file($filename) && !unlink($filename))
   ) {
     http_response_code(500);
   }
@@ -153,13 +153,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
     switch ($data["method"] ?? "") {
       case "edit":
-        handleEdit($mdFilename, $data["text"] ?? "");
+        handleEdit($filename, $data["text"] ?? "");
         break;
       case "rename":
-        handleRename($rootDirectory, $directory, $mdFilename, $data["name"] ?? "");
+        handleRename($rootDirectory, $directory, $filename, $data["name"] ?? "");
         break;
       case "delete":
-        handleDelete($directory, $mdFilename);
+        handleDelete($directory, $filename);
         break;
       case "files":
         handleFiles($directory);
@@ -267,7 +267,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <link rel="apple-touch-startup-image" href="/public/images/apple-splash-dark-1136-640.jpg" media="(prefers-color-scheme: dark) and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
   <link rel="manifest" href="/public/manifest.json">
   <title><?= $_GET["note"] . " | " . SITE_TITLE; ?></title>
-  <link rel="stylesheet" href="/public/css/github-markdown-5.8.1.min.css">
+  <?php if (ENABLE_MARKDOWN): ?>
+    <link rel="stylesheet" href="/public/css/github-markdown-5.8.1.min.css">
+  <?php endif; ?>
   <link rel="stylesheet" href="/public/css/index.css">
   <link rel="stylesheet" href="/public/css/edit.css">
 </head>
@@ -292,7 +294,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <a href="">Copy</a>
       <div class="menu-dropdown">
         <a class="menu-dropdown-item" href="" id="copy-raw">Raw</a>
-        <a class="menu-dropdown-item" href="" id="copy-text">Text</a>
         <a class="menu-dropdown-item" href="" id="copy-link">Link</a>
       </div>
     </div>
@@ -302,8 +303,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php endif; ?>
   </div>
   <div id="editor">
-    <div id="codemirror"></div>
-    <div class="markdown-body" id="markdown"></div>
+    <?php if (ENABLE_MARKDOWN): ?>
+      <div id="codemirror"></div>
+      <div class="markdown-body" id="markdown"></div>
+    <?php else: ?>
+      <textarea autofocus id="textarea"><?php
+                                        if (is_file($filename)) {
+                                          echo htmlspecialchars(file_get_contents($filename), ENT_QUOTES, "UTF-8");
+                                        }
+                                        ?></textarea>
+    <?php endif; ?>
   </div>
   <div id="file-drop">
     <span>
@@ -320,18 +329,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <div id="loader">
     <div class="loader"></div>
   </div>
-  <script src="/public/js/markdown-it-14.1.0.min.js"></script>
-  <script src="/public/js/markdown-it-task-lists-2.1.0.min.js"></script>
+  <?php if (ENABLE_MARKDOWN): ?>
+    <script src="/public/js/dompurify-3.3.3.min.js"></script>
+    <script src="/public/js/markdown-it-14.1.0.min.js"></script>
+    <script src="/public/js/markdown-it-task-lists-2.1.0.min.js"></script>
+  <?php endif; ?>
   <script src="/public/js/split-1.6.5.min.js"></script>
-  <script>
-    window.editorViewDoc = <?php
-                            if (is_file($mdFilename)) {
-                              echo json_encode(file_get_contents($mdFilename));
-                            } else {
-                              echo '""';
-                            }
-                            ?>;
-  </script>
+  <?php if (ENABLE_MARKDOWN): ?>
+    <script>
+      window.markdownEnabled = true;
+      window.editorViewDoc = <?php
+                              if (is_file($filename)) {
+                                echo json_encode(file_get_contents($filename));
+                              } else {
+                                echo '""';
+                              }
+                              ?>;
+    </script>
+  <?php endif; ?>
   <script src="/public/js/edit.js" type="module"></script>
 </body>
 

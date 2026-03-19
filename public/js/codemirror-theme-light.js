@@ -11,7 +11,7 @@ const lightTheme = EditorView.theme(
       height: "100%",
     },
     "&.cm-focused": {
-      outline: "none",
+      outline: "2px solid #0969da",
     },
     ".cm-scroller": {
       color: "#1f2328",
@@ -94,7 +94,7 @@ const lightTheme = EditorView.theme(
       },
     },
   },
-  { dark: false }
+  { dark: false },
 );
 
 const lightHighlightStyle = HighlightStyle.define([

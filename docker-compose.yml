@@ -6,7 +6,8 @@ services:
       # UPLOAD_MAX_FILESIZE: 10M
       # POST_MAX_SIZE: 40M
       # MAX_EXECUTION_TIME: 150
-      SITE_TITLE: ""
+      SITE_TITLE: "Notepad"
+      ENABLE_MARKDOWN: "1"
       PRIVATE_MODE: ""
       USER_ID: ""
       USERNAME: ""

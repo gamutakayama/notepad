@@ -109,3 +109,8 @@ function checkNoteName()
     die;
   }
 }
+
+function getFileExtension()
+{
+  return ENABLE_MARKDOWN ? "md" : "txt";
+}

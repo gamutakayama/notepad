@@ -1,3 +1,12 @@
+#content {
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  font-size: 14px;
+  margin: 0;
+}
+
+#content:has(+ #files),
 #markdown:has(+ #files) {
   height: calc(80% - 8px);
 }
@@ -24,4 +33,13 @@
   margin-top: 16px;
   overflow: auto;
   padding: 16px;
+}
+
+#files p {
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+#files > :last-child {
+  margin-bottom: 0;
 }

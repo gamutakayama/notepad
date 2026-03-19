@@ -1,9 +1,4 @@
-.markdown-body {
-  background-color: var(--bgColor-default);
-  word-wrap: break-word;
-}
-
-.markdown-body h1 {
+#content h1 {
   border-bottom: 1px solid var(--borderColor-muted);
   font-size: 32px;
   font-weight: 600;
@@ -12,12 +7,13 @@
   padding-bottom: 9.6px;
 }
 
-.markdown-body ol {
+#content ol {
   margin-bottom: 0;
   margin-top: 0;
   padding-left: 32px;
 }
 
-.markdown-body li + li, .markdown-body li li {
+#content li + li,
+#content li li {
   margin-top: 4px;
 }

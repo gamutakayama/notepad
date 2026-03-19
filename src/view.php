@@ -14,11 +14,11 @@ $directory = __DIR__ . "/../_notes";
 checkDirectory($directory);
 
 $directory .= "/" . $_GET["note"];
-$mdFilename = "$directory.md";
+$filename = $directory . "." . getFileExtension();
 
 $content = "";
-if (is_file($mdFilename)) {
-  $content = htmlspecialchars(file_get_contents($mdFilename), ENT_QUOTES, "UTF-8");
+if (is_file($filename)) {
+  $content = file_get_contents($filename);
 }
 
 $filenames = [];
@@ -125,7 +125,9 @@ if (!$content && !$filenames) {
   <link rel="apple-touch-startup-image" href="/public/images/apple-splash-dark-1136-640.jpg" media="(prefers-color-scheme: dark) and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
   <link rel="manifest" href="/public/manifest.json">
   <title><?= $_GET["note"] . " | " . SITE_TITLE; ?></title>
-  <link rel="stylesheet" href="/public/css/github-markdown-5.8.1.min.css">
+  <?php if (ENABLE_MARKDOWN): ?>
+    <link rel="stylesheet" href="/public/css/github-markdown-5.8.1.min.css">
+  <?php endif; ?>
   <link rel="stylesheet" href="/public/css/index.css">
   <link rel="stylesheet" href="/public/css/view.css">
 </head>
@@ -146,7 +148,6 @@ if (!$content && !$filenames) {
       <a href="">Copy</a>
       <div class="menu-dropdown">
         <a class="menu-dropdown-item" href="" id="copy-raw">Raw</a>
-        <a class="menu-dropdown-item" href="" id="copy-text">Text</a>
         <a class="menu-dropdown-item" href="" id="copy-link">Link</a>
       </div>
     </div>
@@ -155,15 +156,22 @@ if (!$content && !$filenames) {
       <a href="" id="logout">Logout</a>
     <?php endif; ?>
   </div>
-  <div class="markdown-body" id="markdown"></div>
+  <?php if (ENABLE_MARKDOWN): ?>
+    <div class="markdown-body" id="markdown"></div>
+  <?php else: ?>
+    <pre id="content"><?= htmlspecialchars($content, ENT_QUOTES, "UTF-8"); ?></pre>
+  <?php endif; ?>
   <?php if ($filenames): ?>
-    <div class="markdown-body" id="files"></div>
+    <div id="files"></div>
   <?php endif; ?>
   <div id="loader">
     <div class="loader"></div>
   </div>
-  <script src="/public/js/markdown-it-14.1.0.min.js"></script>
-  <script src="/public/js/markdown-it-task-lists-2.1.0.min.js"></script>
+  <?php if (ENABLE_MARKDOWN): ?>
+    <script src="/public/js/dompurify-3.3.3.min.js"></script>
+    <script src="/public/js/markdown-it-14.1.0.min.js"></script>
+    <script src="/public/js/markdown-it-task-lists-2.1.0.min.js"></script>
+  <?php endif; ?>
   <script src="/public/js/split-1.6.5.min.js"></script>
   <script type="module">
     import { initMarkdownIt, initSplit } from "/public/js/common.js";
@@ -171,24 +179,33 @@ if (!$content && !$filenames) {
 
     setupCopyRaw(() => content);
 
-    let content = <?= json_encode($content); ?>;
-    const doc = new DOMParser().parseFromString(content, "text/html");
-    content = doc.documentElement.textContent;
+    const content = <?= json_encode($content); ?>;
 
-    const md = initMarkdownIt();
+    const markdownEnabled = <?= json_encode(ENABLE_MARKDOWN); ?>;
 
-    document.getElementById("markdown").innerHTML = md.render(content);
+    if (markdownEnabled) {
+      const md = initMarkdownIt();
+      const dirtyHTML = md.render(content);
+      const cleanHTML = DOMPurify.sanitize(dirtyHTML, {
+        FORBID_TAGS: ["style"],
+      });
+      document.getElementById("markdown").innerHTML = cleanHTML;
+    }
 
-    let files = <?= json_encode($filenames); ?>;
+    const files = <?= json_encode($filenames); ?>;
     if (files.length) {
-      files = files
+      const innerHTML = files
         .map((file) => {
-          return `[${file}](/file/<?= $_GET["note"]; ?>/${encodeURIComponent(file)})`;
+          return `<a href="/file/<?= $_GET["note"]; ?>/${encodeURIComponent(file)}" target="_blank">${file}</a>`;
         })
         .join(" , ");
-      document.getElementById("files").innerHTML = md.render(`Files\n\n${files}`);
+      document.getElementById("files").innerHTML = `<p>Files</p><p>${innerHTML}</p>`;
 
-      initSplit(["#markdown", "#files"], "vertical", "v");
+      initSplit(
+        [markdownEnabled ? "#markdown" : "#content", "#files"],
+        "vertical",
+        "v",
+      );
     }
   </script>
 </body>

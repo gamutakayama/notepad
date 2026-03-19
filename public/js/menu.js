@@ -79,21 +79,6 @@ export const setupCopyRaw = (getText) => {
   }
 };
 
-const copyTextElement = document.getElementById("copy-text");
-if (copyTextElement) {
-  copyTextElement.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    if (copyTextElement.innerText === "Text") {
-      copyToClipboard(document.getElementById("markdown").textContent);
-      copyTextElement.innerText = "Copied!";
-      setTimeout(() => {
-        copyTextElement.innerText = "Text";
-      }, 1000);
-    }
-  });
-}
-
 const copyLinkElement = document.getElementById("copy-link");
 if (copyLinkElement) {
   copyLinkElement.addEventListener("click", (e) => {

@@ -30,6 +30,27 @@
   width: calc(50% - 8px);
 }
 
+#textarea {
+  background-color: var(--bgColor-default);
+  border: 1px solid var(--borderColor-default);
+  border-radius: 0;
+  color: inherit;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  font-size: 14px;
+  height: 100%;
+  line-height: inherit;
+  padding: 16px;
+  resize: none;
+  width: 100%;
+}
+
+#textarea:focus {
+  outline: 2px solid var(--focus-outlineColor);
+  outline-offset: -2px;
+}
+
 .gutter {
   align-items: center;
   color: var(--borderColor-default);
@@ -121,7 +142,7 @@
   display: flex;
 }
 
-@media screen and (max-width: 789px) {
+@media screen and (max-width: 768px) {
   #editor {
     flex-direction: column;
   }
@@ -140,5 +161,17 @@
     margin-left: 0;
     margin-top: 16px;
     width: auto;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  #textarea {
+    font-size: 16px;
+  }
+
+  @media (min-width: 768px) {
+    #textarea {
+      font-size: 14px;
+    }
   }
 }
