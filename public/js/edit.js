@@ -1,5 +1,6 @@
 import {
   getPathnameLastSegment,
+  initDOMPurify,
   initMarkdownIt,
   initSplit,
 } from "/public/js/common.js";
@@ -118,9 +119,7 @@ const debounce = (callback, wait) => {
 
 const renderMarkdown = debounce((md, docString) => {
   const dirtyHTML = md.render(docString);
-  const cleanHTML = DOMPurify.sanitize(dirtyHTML, {
-    FORBID_TAGS: ["style"],
-  });
+  const cleanHTML = DOMPurify.sanitize(dirtyHTML);
   markdownElement.innerHTML = cleanHTML;
 }, 500);
 
@@ -149,11 +148,11 @@ if (window.markdownEnabled) {
 
   content = editorView.state.doc.toString();
 
+  initDOMPurify();
+
   const md = initMarkdownIt();
   const dirtyHTML = md.render(content);
-  const cleanHTML = DOMPurify.sanitize(dirtyHTML, {
-    FORBID_TAGS: ["style"],
-  });
+  const cleanHTML = DOMPurify.sanitize(dirtyHTML);
   markdownElement.innerHTML = cleanHTML;
 
   let direction = window.innerWidth > 768 ? "horizontal" : "vertical";

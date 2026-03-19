@@ -174,7 +174,7 @@ if (!$content && !$filenames) {
   <?php endif; ?>
   <script src="/public/js/split-1.6.5.min.js"></script>
   <script type="module">
-    import { initMarkdownIt, initSplit } from "/public/js/common.js";
+    import { initDOMPurify, initMarkdownIt, initSplit } from "/public/js/common.js";
     import { setupCopyRaw } from "/public/js/menu.js";
 
     setupCopyRaw(() => content);
@@ -184,11 +184,11 @@ if (!$content && !$filenames) {
     const markdownEnabled = <?= json_encode(ENABLE_MARKDOWN); ?>;
 
     if (markdownEnabled) {
+      initDOMPurify();
+
       const md = initMarkdownIt();
       const dirtyHTML = md.render(content);
-      const cleanHTML = DOMPurify.sanitize(dirtyHTML, {
-        FORBID_TAGS: ["style"],
-      });
+      const cleanHTML = DOMPurify.sanitize(dirtyHTML);
       document.getElementById("markdown").innerHTML = cleanHTML;
     }
 

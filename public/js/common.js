@@ -4,30 +4,6 @@ export const initMarkdownIt = () => {
     .use(window.markdownitTaskLists);
   md.linkify.set({ fuzzyEmail: false });
 
-  // https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md#renderer
-  // Remember the old renderer if overridden, or proxy to the default link_open renderer.
-  const defaultLinkOpenRender =
-    md.renderer.rules.link_open ||
-    ((tokens, idx, options, _, self) => {
-      return self.renderToken(tokens, idx, options);
-    });
-  // Add target="_blank" to all other links.
-  md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
-    try {
-      const href = new Map(tokens[idx].attrs).get("href");
-      if (
-        href.startsWith("/file/") ||
-        new URL(href).origin !== window.location.origin
-      ) {
-        // Add a new `target` attribute, or replace the value of the existing one.
-        tokens[idx].attrSet("target", "_blank");
-      }
-    } catch {}
-
-    // Pass the token to the default renderer.
-    return defaultLinkOpenRender(tokens, idx, options, env, self);
-  };
-
   const defaultImageRender =
     md.renderer.rules.image ||
     ((tokens, idx, options, _, self) => {
@@ -40,6 +16,21 @@ export const initMarkdownIt = () => {
   };
 
   return md;
+};
+
+export const initDOMPurify = () => {
+  DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+    if (node.href) {
+      try {
+        if (new URL(node.href).origin !== window.location.origin) {
+          node.setAttribute("rel", "nofollow noopener noreferrer");
+          node.setAttribute("target", "_blank");
+        }
+      } catch {}
+    }
+  });
+
+  DOMPurify.setConfig({ FORBID_TAGS: ["style"] });
 };
 
 export const getPathnameLastSegment = () => {
@@ -68,17 +59,17 @@ export const initSplit = (elements, direction, key) => {
 
       const path = document.createElementNS(
         "http://www.w3.org/2000/svg",
-        "path"
+        "path",
       );
       if (direction === "horizontal") {
         path.setAttribute(
           "d",
-          "M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+          "M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0",
         );
       } else {
         path.setAttribute(
           "d",
-          "M2 8a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2"
+          "M2 8a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2m0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2",
         );
       }
 

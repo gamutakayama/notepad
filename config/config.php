@@ -1,7 +1,10 @@
 <?php
 define("SITE_TITLE", getenv("SITE_TITLE") ?: "Notepad");
 
-define("ENABLE_MARKDOWN", filter_var(getenv("ENABLE_MARKDOWN") ?? "1", FILTER_VALIDATE_BOOL));
+define(
+  "ENABLE_MARKDOWN",
+  filter_var(getenv("ENABLE_MARKDOWN") === false ? "1" : getenv("ENABLE_MARKDOWN"), FILTER_VALIDATE_BOOL)
+);
 
 define("PRIVATE_MODE", getenv("PRIVATE_MODE") ?: "");
 
