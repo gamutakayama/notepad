@@ -4,6 +4,7 @@
     monospace;
   font-size: 14px;
   margin: 0;
+  white-space: pre-wrap;
 }
 
 #content:has(+ #files),

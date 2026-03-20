@@ -47,10 +47,13 @@ const darkTheme = EditorView.theme(
       padding: "8px 0",
     },
     ".cm-line": {
-      padding: "0 2px",
+      padding: "0 8px 0 2px",
     },
     ".cm-activeLine": {
       backgroundColor: "#656c761f",
+    },
+    ".cm-placeholder": {
+      color: "#9198a1",
     },
     "&.cm-focused .cm-matchingBracket": {
       backgroundColor: "#3a587a75",

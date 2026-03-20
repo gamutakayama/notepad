@@ -307,11 +307,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <div id="codemirror"></div>
       <div class="markdown-body" id="markdown"></div>
     <?php else: ?>
-      <textarea autofocus id="textarea"><?php
-                                        if (is_file($filename)) {
-                                          echo htmlspecialchars(file_get_contents($filename), ENT_QUOTES, "UTF-8");
-                                        }
-                                        ?></textarea>
+      <textarea autofocus id="textarea" placeholder="Enter text here"><?php
+                                                                      if (is_file($filename)) {
+                                                                        echo htmlspecialchars(file_get_contents($filename), ENT_QUOTES, "UTF-8");
+                                                                      }
+                                                                      ?></textarea>
     <?php endif; ?>
   </div>
   <div id="file-drop">

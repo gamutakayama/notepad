@@ -31,6 +31,7 @@ import {
   highlightSpecialChars,
   keymap,
   lineNumbers,
+  placeholder,
   rectangularSelection,
 } from "https://esm.sh/@codemirror/view";
 import { dark } from "/public/js/codemirror-theme-dark.js";
@@ -103,6 +104,7 @@ export const initCodeMirror = (onDocChanged) => {
       crosshairCursor(),
       highlightActiveLine(),
       keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap]),
+      placeholder("Enter text here"),
       markdown({ base: markdownLanguage }),
       keymap.of([indentWithTab]),
       updateListener,

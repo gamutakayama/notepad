@@ -46,9 +46,13 @@
   width: 100%;
 }
 
+#textarea::placeholder {
+  color: var(--fgColor-muted);
+}
+
 #textarea:focus {
   outline: 2px solid var(--focus-outlineColor);
-  outline-offset: -2px;
+  outline-offset: -1px;
 }
 
 .gutter {
