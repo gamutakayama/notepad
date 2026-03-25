@@ -108,6 +108,7 @@ export const initCodeMirror = (onDocChanged) => {
       markdown({ base: markdownLanguage }),
       keymap.of([indentWithTab]),
       updateListener,
+      maxLength,
       theme.of(darkMQL.matches ? dark : light),
     ],
   });
@@ -121,19 +122,25 @@ export const initCodeMirror = (onDocChanged) => {
   return editorView;
 };
 
-const insertIndent = ({ state, dispatch }) => {
-  if (state.selection.ranges.some((range) => !range.empty)) {
-    return indentMore({ state, dispatch });
-  }
+const indentWithTab = {
+  key: "Tab",
+  run: ({ state, dispatch }) => {
+    if (state.selection.ranges.some((range) => !range.empty)) {
+      return indentMore({ state, dispatch });
+    }
 
-  dispatch(
-    state.update(state.replaceSelection(state.facet(indentUnit)), {
-      scrollIntoView: true,
-      userEvent: "input",
-    }),
-  );
+    dispatch(
+      state.update(state.replaceSelection(state.facet(indentUnit)), {
+        scrollIntoView: true,
+        userEvent: "input",
+      }),
+    );
 
-  return true;
+    return true;
+  },
+  shift: indentLess,
 };
 
-const indentWithTab = { key: "Tab", run: insertIndent, shift: indentLess };
+const maxLength = EditorState.changeFilter.of((tr) => {
+  return tr.newDoc.length <= 99999;
+});

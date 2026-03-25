@@ -41,10 +41,11 @@ function handleEdit($filename, $text)
 {
   $success = false;
 
-  if (strlen($text)) {
-    $success = file_put_contents($filename, $text);
-  } else {
+  $length = mb_strlen($text, "UTF-8");
+  if ($length === 0) {
     $success = unlink($filename);
+  } else if ($length <= 99999) {
+    $success = file_put_contents($filename, $text);
   }
 
   if (!$success) {
@@ -307,11 +308,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <div id="codemirror"></div>
       <div class="markdown-body" id="markdown"></div>
     <?php else: ?>
-      <textarea autofocus id="textarea" placeholder="Enter text here"><?php
-                                                                      if (is_file($filename)) {
-                                                                        echo htmlspecialchars(file_get_contents($filename), ENT_QUOTES, "UTF-8");
-                                                                      }
-                                                                      ?></textarea>
+      <textarea autofocus id="textarea" maxlength="99999" placeholder="Enter text here"><?php
+                                                                                        if (is_file($filename)) {
+                                                                                          echo htmlspecialchars(file_get_contents($filename), ENT_QUOTES, "UTF-8");
+                                                                                        }
+                                                                                        ?></textarea>
     <?php endif; ?>
   </div>
   <div id="file-drop">

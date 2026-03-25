@@ -81,7 +81,7 @@ const getContent = () => {
 
 const uploadContent = async () => {
   const temp = getContent();
-  if (content !== temp) {
+  if (!composing && content !== temp) {
     try {
       const response = await fetch(window.location.href, {
         body: JSON.stringify({ method: "edit", text: temp }),
@@ -129,11 +129,17 @@ const markdownElement = document.getElementById("markdown");
 
 let content;
 let editorView;
+let composing;
 
 if (window.markdownEnabled) {
   const { initCodeMirror } = await import("/public/js/codemirror.min.js");
 
   editorView = initCodeMirror((update) => {
+    composing = update.view.composing;
+    if (composing) {
+      return;
+    }
+
     const docString = update.state.doc.toString();
 
     if (content === docString) {
@@ -170,11 +176,22 @@ if (window.markdownEnabled) {
   content = textareaElement.value;
 
   textareaElement.addEventListener("input", (e) => {
+    if (composing) {
+      return;
+    }
+
     if (content === e.target.value) {
       statusElement.className = "status-success";
     } else {
       statusElement.className = "status-attention";
     }
+  });
+  textareaElement.addEventListener("compositionstart", () => {
+    composing = true;
+  });
+  textareaElement.addEventListener("compositionend", (e) => {
+    composing = false;
+    e.target.dispatchEvent(new CustomEvent("input"));
   });
 }
 
