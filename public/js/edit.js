@@ -129,18 +129,16 @@ const markdownElement = document.getElementById("markdown");
 
 let content;
 let editorView;
-let composing;
+let composing = false;
 
 if (window.markdownEnabled) {
   const { initCodeMirror } = await import("/public/js/codemirror.min.js");
 
-  editorView = initCodeMirror((update) => {
-    composing = update.view.composing;
+  editorView = initCodeMirror((docString, isComposing) => {
+    composing = isComposing;
     if (composing) {
       return;
     }
-
-    const docString = update.state.doc.toString();
 
     if (content === docString) {
       statusElement.className = "status-success";

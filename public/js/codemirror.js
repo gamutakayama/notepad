@@ -38,11 +38,7 @@ import { dark } from "/public/js/codemirror-theme-dark.js";
 import { light } from "/public/js/codemirror-theme-light.js";
 
 export const initCodeMirror = (onDocChanged) => {
-  const updateListener = EditorView.updateListener.of((update) => {
-    if (update.docChanged) {
-      onDocChanged(update);
-    }
-  });
+  let composing = false;
 
   const darkMQL = window.matchMedia("(prefers-color-scheme: dark)");
 
@@ -107,8 +103,23 @@ export const initCodeMirror = (onDocChanged) => {
       placeholder("Enter text here"),
       markdown({ base: markdownLanguage }),
       keymap.of([indentWithTab]),
-      updateListener,
-      maxLength,
+      EditorView.updateListener.of((update) => {
+        if (update.docChanged) {
+          onDocChanged(update.state.doc.toString(), composing);
+        }
+      }),
+      EditorView.domEventHandlers({
+        compositionstart: () => {
+          composing = true;
+        },
+        compositionend: () => {
+          composing = false;
+          onDocChanged(editorView.state.doc.toString(), composing);
+        },
+      }),
+      EditorState.changeFilter.of((tr) => {
+        return tr.newDoc.length <= 99999;
+      }),
       theme.of(darkMQL.matches ? dark : light),
     ],
   });
@@ -140,7 +151,3 @@ const indentWithTab = {
   },
   shift: indentLess,
 };
-
-const maxLength = EditorState.changeFilter.of((tr) => {
-  return tr.newDoc.length <= 99999;
-});

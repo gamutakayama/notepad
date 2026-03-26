@@ -180,7 +180,7 @@ function renderTree($tree, $path = "")
 
 <body>
   <div class="menu">
-    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2026.3.25')"><?= SITE_TITLE; ?></span>
+    <span class="title" onclick="alert('<?= SITE_TITLE; ?> - v2026.3.26')"><?= SITE_TITLE; ?></span>
     <a href="" id="new">New</a>
     <?php if (checkLogged()): ?>
       <a href="" id="logout">Logout</a>
