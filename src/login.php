@@ -67,7 +67,7 @@ function sendMessage($message, $time, $ip)
   $text = "<b>" . SITE_TITLE . " - " . $_SERVER["SERVER_NAME"] . "</b>\n\n";
   $text .= "<b>$message</b>\n\n";
   $text .= "Time: $time\n";
-  $text .= "IP: $ip";
+  $text .= "IP: <a href=\"https://ipinfo.io/$ip\">$ip</a>";
 
   $params = [
     "chat_id" => TELEGRAM_CHAT_ID,
