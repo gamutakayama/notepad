@@ -279,7 +279,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <div class="menu">
     <div id="status"></div>
     <span class="title" onclick="alert('<?= $_GET['note']; ?>')">
-      <?= end(explode("+", $_GET["note"])); ?>
+      <?= array_slice(explode("+", $_GET["note"]), -1)[0]; ?>
     </span>
     <div class="menu-item">
       <a href="">File</a>
